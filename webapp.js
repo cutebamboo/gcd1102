@@ -4,8 +4,8 @@ const hostname = "localhost";
 
 const server = http.createServer((req,res)=>{
     res.statusCode = 200;
-    res.setHeader("Content-Type","text/plain")
-    res.end("hello world");
+    res.setHeader("Content-Type","application/json")
+    res.end('{"message" : "hello world"}');
 });
 
 server.listen(port,hostname,()=>{
