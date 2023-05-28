@@ -1,6 +1,6 @@
 const http = require("http");
 const dt = require('./mymodule');
-const port = 3000;
+const port = 4000;
 const hostname = "localhost";
 const fobj= require('fs');
 
@@ -26,42 +26,107 @@ const server = http.createServer((req,res)=>{
         case "/literature":
             res.writeHead(200,"Content-Type","text/plain");
             const fcontent = fobj.readFileSync('./alice.txt');
-            res.end(`${fcontent.toString()}`);
+            res.write(`${fcontent.toString()}`);
+            res.end("THIS IS THE END OF STORY");
             break;
-        case "/createfile":
-            
-            // check if this file already exists or not
-            var buff = new Buffer.alloc(2048);
-            fobj.open('./alice.txt','r',(err,fd)=>{
-                if (err){
-                   return console.log(`${err.message}`);
-                }
-                fobj.read(fd,buff,0,buff.length,0,()=>{
-                    res.end(`<p> ${buff.toString('ascii')} </p>`);
-                    return;});
-                //console.log(buff.toString('ascii'));
-                res.write("<h1>Bonjour !!!</h1>");
-                res.write("<h1>File already existed</h1><p>This is a HTML response</p> <ol>");
+        case "/literature2":
+            res.writeHead(200,"Content-Type","text/plain");
+            fobj.readFile('./alice.txt',(err,data)=>{
                 
+                if (err){
+                    console.log(`error found with code: ${err.errno} and message: ${err.message}`);
+                    res.end(`error found with code: ${err.errno} and message: ${err.message}`);
+                }
+                else{
+                    res.write(data.toString());
+                }
+            }
+            );
+
+            res.end("THIS IS THE END OF THE STORY.");
+
+            break;
+        case "/literature2":
+            res.writeHead(200,"Content-Type","text/plain");
+            fobj.readFile('./alice.txt',(err,data)=>{
+                
+                if (err){
+                    console.log(`error found with code: ${err.errno} and message: ${err.message}`);
+                    res.end(`error found with code: ${err.errno} and message: ${err.message}`);
+                }
+                else{
+                    res.write(data.toString());
+                }
+            }
+            );
+
+            res.end("THIS IS THE END OF THE STORY.");
+
+            break;
+        case "/literature2":
+            res.writeHead(200,"Content-Type","text/plain");
+            fobj.readFile('./alice.txt',(err,data)=>{
+                
+                if (err){
+                    console.log(`error found with code: ${err.errno} and message: ${err.message}`);
+                    res.end(`error found with code: ${err.errno} and message: ${err.message}`);
+                }
+                else{
+                    res.write(data.toString());
+                }
+            }
+            );
+
+            res.end("THIS IS THE END OF THE STORY.");
+
+            break;
+        case "/literature3":
+            var txtdata = "We are using the writeFile function"
+            res.writeHead(200,"Content-Type","text/plain");
+            fobj.writeFile('./alice.txt',txtdata,{encoding: "utf8",flag: "r+"},(err)=>{
+                    
+                if (err){
+                    console.log(`error found with code: ${err.errno} and message: ${err.message}`);
+                    res.end(`error found with code: ${err.errno} and message: ${err.message}`);
+                }});
+    
+            res.end("We are using the writeFile function");
+    
+            break;
+        case "/openfile":
+            var buff = new Buffer.alloc(100);
+            fobj.open('./alice.txt',"r+",(err,fd)=>{
+                if (err){
+                    return console.log(err.message);
+                }
+                else{
+                    fobj.read(fd,buff,0,buff.length,0,()=>{return;});
+                    res.write("We are successfully to open file in read mode:------");
+                    //res.write(buff.toString('ascii'));
+                    res.write(buff);
+                    res.end();
+                }
             });
-            res.writeHead(200,"Content-Type","text/html");
-            res.write("<h1>Hello World</h1>");
-            
-            
-
-            //res.write(`<p> ${buff.toString('ascii')} </p>`,()=>{return;});
-            //console.log(buff.toString('ascii'));
-
-            /*
-                //console.log(buff.toString('ascii'));
-                //res.write("<h1>File already existed</h1><p>This is a HTML response</p> <ol>",()=>{return;});
-            */
-                break;
+            break;
+        case "/writefile":
+            var buff = new Buffer.alloc(100);
+            buff = "We are now create a file and write down contents";
+            fobj.open('./alice.txt','r+',(err,fd)=>{
+                if (err){
+                    return console.log(err.message);
+                }
+                else{
+                    fobj.write(fd,buff,200,'utf-8',()=>{return;});
+                    res.write("we write a file.");
+                    res.end();
+                }
+            });
+            break;
         default:
             res.end("<h1>Hello World</h1><p>This is a HTML response</p><ol><li>One</li><li>Two</li><li>Three</li></ol>");
             break;
     }
-return;
+
 });
 
 server.listen(port,hostname,()=>{
