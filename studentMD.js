@@ -1,41 +1,13 @@
-const express = require('express');
-const router = express.Router();
+const stuRouter = require('express').Router();
 const Joi = require("joi");
 const fobj= require('fs');
-const mongoose = require('mongoose');
+const Event = require('events');
+const emitter = new Event;
 
 const studentFN = "./studentdata.txt";
-var students = [];
 
-router.use(express.json());
 
-//try to connect to the database named "mystudents"
-router.get('/connectDB',(req,res)=>{
-    mongoose.connect('mongodb://localhost/mystudents')
-    .then(()=> {
-        console.log('The database is already connected');
-        //res.status(200).send('The database is already connected');
-    })
-    .catch(err => {
-        console.error('could not connect to MongoDB',err);
-        res.status(400).send(`could not connect to MongoDB ${err}`);
-    });
-
-    const studentSchema = new mongoose.Schema({
-        //{"name":"Nguyễn Bính","DayOfBirth":15,"MonthofBirth":9,"YearofBirth":1978}
-        name: String,
-        DayOfBirth: Number,
-        MonthofBirth: Number,
-        YearofBirth: Number
-    });
-
-    const StudentClass = mongoose.model('Students',studentSchema);
-
-    console.log('successfully creating the model');
-    res.status(200).send('The database is already connected and modeled');
-});
-
-router.get('/load', (req,res)=>{
+stuRouter.get('/load', (req,res)=>{
 
     try{
         const buf = fobj.readFileSync(studentFN);
@@ -47,7 +19,7 @@ router.get('/load', (req,res)=>{
     }
 });
 
-router.get('/newsave', (req,res)=>{
+stuRouter.get('/newsave', (req,res)=>{
     try{
         fobj.writeFileSync(studentFN,JSON.stringify(students));
         res.status(200).send(`The student data is successfully stored to the file ${studentFN}`);
@@ -58,11 +30,16 @@ router.get('/newsave', (req,res)=>{
 
 });
 
-router.get('/',(req,res)=>{
-    res.status(200).send(students);
-})
+stuRouter.get('/genHelloEvent',(req,res)=>{
+    emitter.emit(':genHelloMessage',{id: 1, name: "tran thanh truc"});
+});
 
-router.post('/append',(req,res) => {
+emitter.on(':genHelloMessage',(js)=>{
+    console.log(`Xin chao cac ban:`);
+    console.log(js);
+});
+
+stuRouter.post('/append',(req,res) => {
     //validate the student information
     
     const {error} = checkValidation2(req.body);
@@ -81,7 +58,13 @@ router.post('/append',(req,res) => {
     else{
         res.status(400).send('this student alreadry existed :' + dupstudent);
     }
-})
+});
+
+stuRouter.get('/view',(req,res)=>{
+    res.status(200).send(students);
+});
+
+
 
 function checkValidation2(student){
     const schema = {
@@ -102,5 +85,30 @@ function checkValidation2(student){
     return result2;
  }
 
-module.exports = router;
-module.exports.chkValidDate = checkValidation2;
+
+function checkValidation(day,month,year){
+    if (year <=1950 || year>=2023){
+        return false;
+    }
+    if (month<1 || month>12){
+        return false;
+    }
+    switch (month){
+        case 1,3,5,7,8,10,12: 
+        if (day<1 || day>31) {
+            return false;
+        }
+        break;
+        case 2:
+            if (day<1 || day>29) {
+                return false;
+            }
+            break; 
+        default:
+            if (day<1 || day>30) {
+                return false;
+            }
+    }
+    return true;
+}
+module.exports = stuRouter;
