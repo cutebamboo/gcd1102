@@ -1,10 +1,7 @@
 const express = require("express");
-const stuMD = require('./studentMD.js');
-const Joi = require("joi");
 const app = express();
-//const stuRouter = require("./studentMD.js");
-
-const sR = stuMD.stuRouter;
+const fobj= require('fs');
+const stuM = require("./studentM");
 const courses = [
     {id:1, name:'courses1'},
     {id:2, name:'courses2'},
@@ -12,10 +9,9 @@ const courses = [
 ];
 
 
-var students = [];
+const router = express.Router();
 
-const router = require('express').Router();
-
+app.use('/api/courses/students',stuM);
 app.use(express.json());
 
 
@@ -30,9 +26,24 @@ router.get('/api/courses', (req,res)=>{
     res.status(200).send(req.params);
 })*/
 
+router.get('/api/nonblocking',async (req,res)=>{
+    var d = 10; 
+    //setTimeout(()=>{console.log('count:',add(5,5))},15000); 
+    //d = await add(20,10);
+    console.log('Hello World 2!!!');
+    res.send('test nonblocking');
+    console.log('Value of d:', await add(20,10));
+});
+
+async function add(a,b){
+    //const c = a +b ;
+    //var c = 0;
+    setTimeout(()=> { c = a +b ; return c;}, 1000);
+    
+}
 
 
-/*router.get('/api/courses/:name/:DayOfBirth/:MonthofBirth/:YearofBirth',(req,res)=>{
+router.get('/api/courses/:name/:DayOfBirth/:MonthofBirth/:YearofBirth',(req,res)=>{
     //res.status(200).send(req.params);
     //students.push(req.params);
     //console.log(students);
@@ -67,9 +78,35 @@ router.get('/api/courses', (req,res)=>{
         }
     }
 
-})*/
+})
 
 
+
+function checkValidation(day,month,year){
+    if (year <=1950 || year>=2023){
+        return false;
+    }
+    if (month<1 || month>12){
+        return false;
+    }
+    switch (month){
+        case 1,3,5,7,8,10,12: 
+        if (day<1 || day>31) {
+            return false;
+        }
+        break;
+        case 2:
+            if (day<1 || day>29) {
+                return false;
+            }
+            break; 
+        default:
+            if (day<1 || day>30) {
+                return false;
+            }
+    }
+    return true;
+}
 
 
 router.get('/home', (req,res) => { 
@@ -87,8 +124,6 @@ router.get('/literature', (req,res) => {
     const fcontent = fobj.readFileSync('./alice.txt');
     res.status(200).send(fcontent.toString());
 }); 
-
-app.use('/api/courses/students',stuMD);
 
 app.use('/', router);
 
