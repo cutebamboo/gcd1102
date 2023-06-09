@@ -20,8 +20,8 @@ const studentSchema = new mongoose.Schema({
 const StudentClass =  mongoose.model('Students',studentSchema);
 
 //try to connect to the database named "mystudents"
-router.get('/connectDB',(req,res)=>{
-    mongoose.connect('mongodb://localhost/mystudents')
+router.get('/connectDB',async (req,res)=>{
+    /*mongoose.connect('mongodb://localhost/mystudents')
     .then(()=> {
         console.log('The database is already connected');
         //res.status(200).send('The database is already connected');
@@ -29,13 +29,24 @@ router.get('/connectDB',(req,res)=>{
     .catch(err => {
         console.error('could not connect to MongoDB',err);
         res.status(400).send(`could not connect to MongoDB ${err}`);
-    });
+    });*/
 
-    console.log('successfully creating the model');
-    res.status(200).send('The database is already connected and modeled');
+    try{
+        const connect = await mongoose.connect('mongodb://localhost/mystudents');
+        console.log('The database is already connected');
+        res.status(200).send('The database is already connected');
+    }
+    catch(error)
+    {
+        console.error('could not connect to MongoDB',error);
+        res.status(400).send(`could not connect to MongoDB ${err}`);
+    }
+    
+    //console.log('successfully creating the model');
+    //res.status(200).send('The database is already connected and modeled');
 });
 
-router.get('/load', (req,res)=>{
+router.get('/load', async(req,res)=>{
 
 
     //eq = equal
@@ -48,22 +59,13 @@ router.get('/load', (req,res)=>{
     //nin = not in
  
     try{
-        //const buf = fobj.readFileSync(studentFN);
-        //students = JSON.parse(buf);
-
-        /*StudentClass.find({YearofBirth: {$gt: 2000}}, (students)=>{
-            console.log(students);
-            res.status(200).send(students);
-        });   */
-         
-        StudentClass.find({YearofBirth: {$lt: 2004, $gt: 1980}, MonthofBirth: 5})
-          .then((students)=>{
-            console.log(students);
-            res.status(200).send(students);
-        });
+        const students = await StudentClass.find({YearofBirth: {$lt: 2004, $gt: 1980}, MonthofBirth: 5});
+        console.log(students);
+        res.status(200).send(students);
     }
     catch(err){
         res.status(400).send('Student File does not exists.');
+        console.log(err);
     }
 });
 
@@ -77,6 +79,7 @@ router.get('/newsave', (req,res)=>{
     }
 
 });
+
 
 router.get('/',(req,res)=>{
     res.status(200).send(students);
