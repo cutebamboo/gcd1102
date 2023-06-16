@@ -12,12 +12,16 @@
   },
   "name": "myfirstweb",
   "version": "1.0.0",
-  "main": "fileapp.js",
+  "main": "webapp2.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node webapp2.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Tran Thanh Trc",
   "license": "ISC",
   "description": ""
 }
