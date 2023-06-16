@@ -26,7 +26,7 @@ const studentSchema = new mongoose.Schema({
     YearofBirth: Number
 });
 
-const myStuCollection = 'MyStudents';
+const myStuCollection = 'teststudent';
 const StudentClass =  mongoose.model(myStuCollection,studentSchema);
 //const docStudent = new StudentClass();
 
@@ -59,15 +59,15 @@ router.get('',(req,res)=>{
 const username = encodeURIComponent('myfirstweb');
 const password = encodeURIComponent('truc1234');
 const cloudname = encodeURIComponent('atlascluster.xmbeqhq.mongodb.net');
-const uriCluster0 = 'mongodb+srv://myfirstweb:truc1234@atlascluster.xmbeqhq.mongodb.net/';
-const uriClusterM0 = 'mongodb+srv://myfirstweb:truc1234@m10cluster.ywzrg.mongodb.net/';
 const stuDatabase = 'Students';
 router.get('/connectDB',(req,res)=>{
+    const uriCluster0 = 'mongodb+srv://truc:truc1234@atlascluster.xmbeqhq.mongodb.net/test1';
+
     //mongoose.connect('mongodb://localhost:27017/mystudents')
     //mongodb+srv://myfirstweb:<password>@atlascluster.xmbeqhq.mongodb.net/
     //mongodb+srv://${username}:${password}@${cluster}/?authSource=${authSource}&authMechanism=${authMechanism}
     //mongoose.connect('mongodb+srv://myfirstweb:truc1234@m10cluster.xmbeqhq.mongodb.net/students?retryWrites=true&w=majority')//?authMechanism=DEFAULT')
-    mongoose.connect(uriCluster0+stuDatabase)
+    mongoose.connect(uriCluster0)
     .then(()=> {
         //this.use('students');
         //console.log('The database is already connected');
